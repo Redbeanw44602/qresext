@@ -10,7 +10,7 @@
 
 #include "logging.h"
 
-namespace qresext {
+namespace qresext::triple_finder {
 
 find_triple_result _find_in_elf(
     const io::byte_container_t& rawfile,
@@ -84,4 +84,4 @@ find_triple_result LiefTripleFinder::find() {
     return make_error_code(errc_unreachable);
 }
 
-} // namespace qresext
+} // namespace qresext::triple_finder

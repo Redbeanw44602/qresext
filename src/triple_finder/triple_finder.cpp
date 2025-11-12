@@ -7,15 +7,15 @@
 #include "triple_finder/triple_finder.h"
 #include "triple_finder/lief_triple_finder.h"
 
-namespace qresext {
+namespace qresext::triple_finder {
 
-triple_finder_ref
+tl::expected<triple_finder_ref, ErrorCode>
 create(KnownTripleFinder type, const io::byte_container_t& filecontent) {
     switch (type) {
     case triple_finder_lief:
         return std::make_unique<LiefTripleFinder>(filecontent);
     }
-    return nullptr;
+    return make_error_code(errc_invalid_finder_type);
 }
 
-} // namespace qresext
+} // namespace qresext::triple_finder

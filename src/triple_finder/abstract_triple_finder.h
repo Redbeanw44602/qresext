@@ -9,7 +9,7 @@
 #include "error.h"
 #include "io/io.h"
 
-namespace qresext {
+namespace qresext::triple_finder {
 
 using find_triple_result = tl::expected<struct ROTriple, ErrorCode>;
 using triple_finder_ref  = std::unique_ptr<class TripleFinder>;
@@ -32,4 +32,4 @@ protected:
     const io::byte_container_t& m_data;
 };
 
-} // namespace qresext
+} // namespace qresext::triple_finder

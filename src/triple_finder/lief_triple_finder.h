@@ -8,7 +8,7 @@
 
 #include "triple_finder/abstract_triple_finder.h"
 
-namespace qresext {
+namespace qresext::triple_finder {
 
 class LiefTripleFinder : public TripleFinder {
 public:
@@ -17,4 +17,4 @@ public:
     find_triple_result find() override;
 };
 
-} // namespace qresext
+} // namespace qresext::triple_finder

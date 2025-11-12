@@ -13,6 +13,7 @@ using shared_byte_container_t = std::shared_ptr<const byte_container_t>;
 
 tl::expected<byte_container_t, ErrorCode> read(std::string_view path);
 
-shared_byte_container_t read_shared(std::string_view path);
+tl::expected<shared_byte_container_t, ErrorCode>
+read_shared(std::string_view path);
 
 } // namespace qresext::io

@@ -31,7 +31,8 @@ tl::expected<byte_container_t, ErrorCode> read(std::string_view path) {
     return buffer;
 }
 
-shared_byte_container_t read_shared(std::string_view path) {
+tl::expected<shared_byte_container_t, ErrorCode>
+read_shared(std::string_view path) {
     // clang-format off
     return *io::read(path)
         .transform([](const io::byte_container_t& bytes) {
