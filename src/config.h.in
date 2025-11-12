@@ -1,0 +1,11 @@
+// SPDX-License-Identifier: MIT
+/*
+ * Copyright (C) 2025-present, RedbeanW.
+ * This file is part of the qresext software.
+ */
+
+// clang-format off
+
+#define VERSION    "${VERSION}"
+
+// clang-format on
