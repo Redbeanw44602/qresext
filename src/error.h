@@ -15,6 +15,8 @@ enum ErrorCode {
     errc_failed_to_open_file,
     errc_failed_to_read_file,
     errc_invalid_finder_type,
+    errc_failed_to_make_directory,
+    errc_failed_to_copy_file,
     errc_unreachable,
 };
 
