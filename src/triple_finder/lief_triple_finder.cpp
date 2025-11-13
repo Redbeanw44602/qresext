@@ -52,21 +52,9 @@ find_triple_result _find_in_elf(
         .payload = rawfile.data() + *rawoff_payload,
     };
 
-    logd(
-        "qt_resource_struct at {:#x}, first 64 bytes is: \n{}",
-        symbol_tree->value(),
-        LIEF::dump(result.tree, 64)
-    );
-    logd(
-        "qt_resource_name at {:#x}, first 64 bytes is: \n{}",
-        symbol_names->value(),
-        LIEF::dump(result.names, 64)
-    );
-    logd(
-        "qt_resource_data at {:#x}, first 64 bytes is: \n{}",
-        symbol_payload->value(),
-        LIEF::dump(result.payload, 64)
-    );
+    logdebug("qt_resource_struct", symbol_tree->value(), result.tree);
+    logdebug("qt_resource_name", symbol_names->value(), result.names);
+    logdebug("qt_resource_data", symbol_payload->value(), result.payload);
 
     return result;
 }

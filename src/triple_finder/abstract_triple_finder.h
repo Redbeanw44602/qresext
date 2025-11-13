@@ -32,4 +32,11 @@ protected:
     const io::byte_container_t& m_data;
 };
 
+void logdebug(
+    std::string_view name,
+    uint64_t         vaddr,
+    const uint8_t*   ptr,
+    size_t           len = 64
+);
+
 } // namespace qresext::triple_finder
