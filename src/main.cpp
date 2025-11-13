@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) try {
     auto args = args_from_cmdline(argc, argv);
 
     // data must be available during the main() lifecycle.
-    auto data = read_shared(args.filename);
+    auto data = read(args.filename);
 
     // clang-format off
     auto result =
