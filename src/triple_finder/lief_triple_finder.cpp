@@ -18,52 +18,53 @@ find_triple_result _find_in_elf(
 ) {
     logi("Executable Linkable Format (ELF) binary found.");
 
-    auto symbol_struct = elf.get_symtab_symbol("_ZL18qt_resource_struct");
-    auto symbol_name   = elf.get_symtab_symbol("_ZL16qt_resource_name");
-    auto symbol_data   = elf.get_symtab_symbol("_ZL16qt_resource_data");
+    auto symbol_tree    = elf.get_symtab_symbol("_ZL18qt_resource_struct");
+    auto symbol_names   = elf.get_symtab_symbol("_ZL16qt_resource_name");
+    auto symbol_payload = elf.get_symtab_symbol("_ZL16qt_resource_data");
 
-    if (symbol_struct && symbol_name && symbol_data) {
+    if (symbol_tree && symbol_names && symbol_payload) {
         logi("Itanium C++ ABI-compatible binary found.");
     } else {
         loge("Binary may have been stripped, try another triple finder.");
         return make_error_code(errc_symbol_not_found);
     }
 
-    auto rawoff_struct = elf.virtual_address_to_offset(symbol_struct->value());
-    auto rawoff_name   = elf.virtual_address_to_offset(symbol_name->value());
-    auto rawoff_data   = elf.virtual_address_to_offset(symbol_data->value());
+    auto rawoff_tree  = elf.virtual_address_to_offset(symbol_tree->value());
+    auto rawoff_names = elf.virtual_address_to_offset(symbol_names->value());
+    auto rawoff_payload =
+        elf.virtual_address_to_offset(symbol_payload->value());
 
-    if (!rawoff_struct || !rawoff_name || !rawoff_data) {
+    if (!rawoff_tree || !rawoff_names || !rawoff_payload) {
         loge("Can't translate virtual address, binary may be corrupted.");
         return make_error_code(errc_invalid_binary_format);
     }
 
     logi(
-        "Qt resource triple found (struct={:#x}, name={:#x}, data={:#x}).",
-        *rawoff_struct,
-        *rawoff_name,
-        *rawoff_data
+        "Qt resource triple found (tree={:#x}, names={:#x}, payload={:#x}).",
+        *rawoff_tree,
+        *rawoff_names,
+        *rawoff_payload
     );
 
     auto result = ROTriple{
-        .tree    = rawfile.data() + *rawoff_struct,
-        .names   = rawfile.data() + *rawoff_name,
-        .payload = rawfile.data() + *rawoff_data,
+        .tree    = rawfile.data() + *rawoff_tree,
+        .names   = rawfile.data() + *rawoff_names,
+        .payload = rawfile.data() + *rawoff_payload,
     };
 
     logd(
         "qt_resource_struct at {:#x}, first 64 bytes is: \n{}",
-        symbol_struct->value(),
+        symbol_tree->value(),
         LIEF::dump(result.tree, 64)
     );
     logd(
         "qt_resource_name at {:#x}, first 64 bytes is: \n{}",
-        symbol_name->value(),
+        symbol_names->value(),
         LIEF::dump(result.names, 64)
     );
     logd(
         "qt_resource_data at {:#x}, first 64 bytes is: \n{}",
-        symbol_data->value(),
+        symbol_payload->value(),
         LIEF::dump(result.payload, 64)
     );
 
