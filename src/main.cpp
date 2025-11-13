@@ -8,6 +8,7 @@
 
 #include "io/io.h"
 #include "qtutil/resource.h"
+#include "triple_finder/manually_triple_finder.h"
 #include "triple_finder/triple_finder.h"
 
 #include "config.h"
@@ -17,9 +18,16 @@ using namespace qresext;
 
 auto args_from_cmdline(int argc, char* argv[]) {
     struct {
-        std::string filename;
-        std::string savepath;
+        std::string qt_bin;
+        std::string save_path;
         std::string finder;
+
+        // used by '-f manually'
+        uint64_t tree;
+        uint64_t names;
+        uint64_t payload;
+        bool     is_virtual_address;
+        bool     is_file_offset;
     } args;
 
     argparse::ArgumentParser program("qresext", VERSION);
@@ -28,25 +36,73 @@ auto args_from_cmdline(int argc, char* argv[]) {
 
     program.add_argument("filename")
         .help("Path to Qt binary executable.")
+        .store_into(args.qt_bin)
         .required();
 
     program.add_argument("-o", "--output")
         .help("Path to save directory.")
+        .store_into(args.save_path)
         .required();
 
     program.add_argument("-f", "--finder")
-        .help("Specify the triple(tree, names, payload) finder.")
-        .choices("lief")
-        .default_value("lief")
-        .implicit_value(true);
+        .help("Specify the triple(tree, names, payload) finder. [auto, manually, lief]")
+        .choices("auto", "manually", "lief")
+        .default_value("auto")
+        .implicit_value(true)
+        .store_into(args.finder);
+    
+    program.add_argument("--tree")
+        .help("Specify the offset of the tree. (Used by '-f manually')")
+        .scan<'x', uint64_t>()
+        .implicit_value(true)
+        .store_into(args.tree);
+
+    program.add_argument("--names")
+        .help("Specify the offset of the names. (Used by '-f manually')")
+        .scan<'x', uint64_t>()
+        .implicit_value(true)
+        .store_into(args.names);
+
+    program.add_argument("--payload")
+        .help("Specify the offset of the payload. (Used by '-f manually')")
+        .scan<'x', uint64_t>()
+        .implicit_value(true)
+        .store_into(args.payload);
+
+    program.add_argument("--virtual-address")
+        .help("Offset is a virtual address. (Used by '-f manually')")
+        .store_into(args.is_virtual_address);
+
+    program.add_argument("--file-offset")
+        .help("Offset is a file offset. (Used by '-f manually')")
+        .store_into(args.is_file_offset);
+    
+    auto& offset_type_group = program.add_mutually_exclusive_group();
+    offset_type_group.add_argument("--virtual-address");
+    offset_type_group.add_argument("--file-offset");
 
     // clang-format on
 
     program.parse_args(argc, argv);
 
-    args.filename = program.get<std::string>("filename");
-    args.savepath = program.get<std::string>("--output");
-    args.finder   = program.get<std::string>("--finder");
+    // validate the arguments
+
+    if (args.finder == "manually") {
+        if (!program.is_used("--tree") || !program.is_used("--names")
+            || !program.is_used("--payload")) {
+            throw std::invalid_argument(
+                "When using the manual triple finder, "
+                "you must specify --tree, --names, --payload."
+            );
+        }
+        if (!program.is_used("--virtual-address")
+            && !program.is_used("--file-offset")) {
+            throw std::invalid_argument(
+                "When using the manual triple finder, you must specify one of "
+                "--virtual-address or --file-offset."
+            );
+        }
+    }
 
     return args;
 }
@@ -59,22 +115,31 @@ int main(int argc, char* argv[]) try {
     auto args = args_from_cmdline(argc, argv);
 
     // data must be available during the main() lifecycle.
-    auto data = read(args.filename);
+    auto data = read(args.qt_bin);
 
     // clang-format off
     auto result =
-        data.and_then([&args](const shared_byte_container_t& data) {
-                auto finder = triple_finder_lief;
-                return create(finder, *data);
+        data.and_then([&args](const byte_container_t& data) {
+                if (args.finder == "manually") {
+                    auto ret = create(triple_finder_manually, data);
+                    auto finder = (ManuallyTripleFinder*)ret->get();
+                    finder->set_triple(args.tree, args.names, args.payload);
+                    finder->is_virtual_address(args.is_virtual_address);
+                    return ret;
+                } else if (args.finder == "lief") {
+                    return create(triple_finder_lief, data);
+                } else {
+                    return create(triple_finder_auto, data);
+                }
             })
             .and_then([](const triple_finder_ref& finder) {
                 return finder->find();
             })
-            .and_then([](const find_triple_result& triple) {
-                return register_resource_data(*triple);
+            .and_then([](const ROTriple& triple) {
+                return register_resource_data(triple);
             })
             .map([&args]() {
-                return dump_resources(args.savepath);
+                return dump_resources(args.save_path);
             });
     // clang-format off
 

@@ -4,8 +4,6 @@
  * This file is part of the qresext software.
  */
 
-#pragma once
-
 #include <LIEF/LIEF.hpp>
 
 #include "logging.h"

@@ -17,6 +17,7 @@ enum ErrorCode {
     errc_invalid_finder_type,
     errc_failed_to_make_directory,
     errc_failed_to_copy_file,
+    errc_failed_to_find_triple,
     errc_unreachable,
 };
 

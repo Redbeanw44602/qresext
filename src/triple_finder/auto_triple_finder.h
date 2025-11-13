@@ -10,13 +10,11 @@
 
 namespace qresext::triple_finder {
 
-enum KnownTripleFinder {
-    triple_finder_auto,
-    triple_finder_manually,
-    triple_finder_lief,
-};
+class AutoTripleFinder : public TripleFinder {
+public:
+    using TripleFinder::TripleFinder;
 
-tl::expected<triple_finder_ref, ErrorCode>
-create(KnownTripleFinder type, const io::byte_container_t& filecontent);
+    find_triple_result find() override;
+};
 
 } // namespace qresext::triple_finder
