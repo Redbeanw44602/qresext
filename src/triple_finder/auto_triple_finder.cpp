@@ -14,7 +14,7 @@
 namespace qresext::triple_finder {
 
 find_triple_result AutoTripleFinder::find() {
-    auto automatically_finders = {triple_finder_lief};
+    auto automatically_finders = {triple_finder_var_symbol};
 
     for (auto which : automatically_finders) {
         auto result =

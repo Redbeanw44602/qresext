@@ -6,7 +6,7 @@
 
 #include <third_party/lief.h>
 
-#include "triple_finder/lief_triple_finder.h"
+#include "triple_finder/var_symbol_triple_finder.h"
 
 #include "logging.h"
 
@@ -71,7 +71,7 @@ _find_in_pe(const util::byte_container_t& rawfile, const LIEF::PE::Binary& pe) {
     return make_error_code(errc_not_implemented);
 }
 
-find_triple_result LiefTripleFinder::find() {
+find_triple_result VarSymbolTripleFinder::find() {
     auto binary = LIEF::Parser::parse(m_data);
     if (!binary) {
         loge("Not a valid binary.");

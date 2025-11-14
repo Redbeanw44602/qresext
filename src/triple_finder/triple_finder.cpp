@@ -6,8 +6,8 @@
 
 #include "triple_finder/triple_finder.h"
 #include "triple_finder/auto_triple_finder.h"
-#include "triple_finder/lief_triple_finder.h"
 #include "triple_finder/manually_triple_finder.h"
+#include "triple_finder/var_symbol_triple_finder.h"
 
 #include "logging.h"
 
@@ -22,9 +22,9 @@ create(KnownTripleFinder type, const util::byte_container_t& filecontent) {
     case triple_finder_manually:
         logi("Selected triple finder: 'manually'");
         return std::make_unique<ManuallyTripleFinder>(filecontent);
-    case triple_finder_lief:
-        logi("Selected triple finder: 'lief'");
-        return std::make_unique<LiefTripleFinder>(filecontent);
+    case triple_finder_var_symbol:
+        logi("Selected triple finder: 'var_symbol'");
+        return std::make_unique<VarSymbolTripleFinder>(filecontent);
     }
     return make_error_code(errc_invalid_finder_type);
 }

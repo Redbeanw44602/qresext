@@ -10,7 +10,7 @@
 
 namespace qresext::triple_finder {
 
-class LiefTripleFinder : public TripleFinder {
+class VarSymbolTripleFinder : public TripleFinder {
 public:
     using TripleFinder::TripleFinder;
 

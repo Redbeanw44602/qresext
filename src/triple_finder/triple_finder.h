@@ -13,7 +13,7 @@ namespace qresext::triple_finder {
 enum KnownTripleFinder {
     triple_finder_auto,
     triple_finder_manually,
-    triple_finder_lief,
+    triple_finder_var_symbol,
 };
 
 tl::expected<triple_finder_ref, ErrorCode>

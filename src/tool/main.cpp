@@ -45,8 +45,9 @@ auto args_from_cmdline(int argc, char* argv[]) {
         .required();
 
     program.add_argument("-f", "--finder")
-        .help("Specify the triple(tree, names, payload) finder. [auto, manually, lief]")
-        .choices("auto", "manually", "lief")
+        .help("Specify the triple(tree, names, payload) finder."
+              "[auto, manually, var_symbol]")
+        .choices("auto", "manually", "var_symbol")
         .default_value("auto")
         .store_into(args.finder);
     
@@ -124,8 +125,8 @@ int main(int argc, char* argv[]) try {
                     finder->set_triple(args.tree, args.names, args.payload);
                     finder->is_virtual_address(args.is_virtual_address);
                     return ret;
-                } else if (args.finder == "lief") {
-                    return create(triple_finder_lief, data);
+                } else if (args.finder == "var_symbol") {
+                    return create(triple_finder_var_symbol, data);
                 } else {
                     return create(triple_finder_auto, data);
                 }
