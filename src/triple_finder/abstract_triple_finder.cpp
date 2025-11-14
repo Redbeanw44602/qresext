@@ -4,7 +4,7 @@
  * This file is part of the qresext software.
  */
 
-#include <LIEF/LIEF.hpp>
+#include <third_party/lief.h>
 
 #include "logging.h"
 

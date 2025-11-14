@@ -4,7 +4,7 @@
  * This file is part of the qresext software.
  */
 
-#include <LIEF/LIEF.hpp>
+#include <third_party/lief.h>
 
 #include "triple_finder/manually_triple_finder.h"
 
@@ -20,29 +20,35 @@ find_triple_result ManuallyTripleFinder::find() {
             return make_error_code(errc_invalid_binary_format);
         }
 
-        if (LIEF::ELF::Binary::classof(binary.get())) {
-            auto& elf = static_cast<LIEF::ELF::Binary&>(*binary);
+        LIEF::result<uint64_t> tree, names, payload;
 
-            auto rawoff_tree    = elf.virtual_address_to_offset(m_tree);
-            auto rawoff_names   = elf.virtual_address_to_offset(m_names);
-            auto rawoff_payload = elf.virtual_address_to_offset(m_payload);
-
-            if (!rawoff_tree || !rawoff_names || !rawoff_payload) {
-                loge("Can't translate virtual address, binary may be corrupted."
-                );
-                return make_error_code(errc_invalid_binary_format);
-            }
-
-            m_tree    = *rawoff_tree;
-            m_names   = *rawoff_names;
-            m_payload = *rawoff_payload;
+        if (auto elf = LIEF::dyn_cast<LIEF::ELF::Binary>(binary)) {
+            tree    = elf->virtual_address_to_offset(m_tree);
+            names   = elf->virtual_address_to_offset(m_names);
+            payload = elf->virtual_address_to_offset(m_payload);
+        } else if (auto macho = LIEF::dyn_cast<LIEF::MachO::Binary>(binary)) {
+            tree    = macho->virtual_address_to_offset(m_tree);
+            names   = macho->virtual_address_to_offset(m_names);
+            payload = macho->virtual_address_to_offset(m_payload);
+        } else if (auto pe = LIEF::dyn_cast<LIEF::PE::Binary>(binary)) {
+            return make_error_code(errc_not_implemented);
         } else {
             return make_error_code(errc_unreachable);
         }
+
+        if (!tree || !names || !payload) {
+            loge("Can't translate virtual address, binary may be corrupted.");
+            return make_error_code(errc_invalid_binary_format);
+        }
+
+        m_tree    = *tree;
+        m_names   = *names;
+        m_payload = *payload;
     }
 
     logi(
-        "Qt resource triple found (tree={:#x}, names={:#x}, "
+        "Qt resource triple has been manually specified. (tree={:#x}, "
+        "names={:#x}, "
         "payload={:#x}).",
         m_tree,
         m_names,

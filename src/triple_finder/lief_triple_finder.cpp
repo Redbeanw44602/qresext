@@ -4,7 +4,7 @@
  * This file is part of the qresext software.
  */
 
-#include <LIEF/LIEF.hpp>
+#include <third_party/lief.h>
 
 #include "triple_finder/lief_triple_finder.h"
 
@@ -59,6 +59,18 @@ find_triple_result _find_in_elf(
     return result;
 }
 
+find_triple_result _find_in_macho(
+    const util::byte_container_t& rawfile,
+    const LIEF::MachO::Binary&    macho
+) {
+    return make_error_code(errc_not_implemented);
+}
+
+find_triple_result
+_find_in_pe(const util::byte_container_t& rawfile, const LIEF::PE::Binary& pe) {
+    return make_error_code(errc_not_implemented);
+}
+
 find_triple_result LiefTripleFinder::find() {
     auto binary = LIEF::Parser::parse(m_data);
     if (!binary) {
@@ -66,11 +78,15 @@ find_triple_result LiefTripleFinder::find() {
         return make_error_code(errc_invalid_binary_format);
     }
 
-    if (LIEF::ELF::Binary::classof(binary.get())) {
-        return _find_in_elf(m_data, static_cast<LIEF::ELF::Binary&>(*binary));
+    if (auto elf = LIEF::dyn_cast<LIEF::ELF::Binary>(binary)) {
+        return _find_in_elf(m_data, *elf);
+    } else if (auto macho = LIEF::dyn_cast<LIEF::MachO::Binary>(binary)) {
+        return _find_in_macho(m_data, *macho);
+    } else if (auto pe = LIEF::dyn_cast<LIEF::PE::Binary>(binary)) {
+        return _find_in_pe(m_data, *pe);
+    } else {
+        return make_error_code(errc_unreachable);
     }
-
-    return make_error_code(errc_unreachable);
 }
 
 } // namespace qresext::triple_finder
