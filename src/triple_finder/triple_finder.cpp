@@ -14,7 +14,7 @@
 namespace qresext::triple_finder {
 
 tl::expected<triple_finder_ref, ErrorCode>
-create(KnownTripleFinder type, const io::byte_container_t& filecontent) {
+create(KnownTripleFinder type, const util::byte_container_t& filecontent) {
     switch (type) {
     case triple_finder_auto:
         logi("Selected triple finder: 'auto'");

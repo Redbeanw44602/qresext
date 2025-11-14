@@ -6,10 +6,10 @@
 
 #include <argparse/argparse.hpp>
 
-#include "io/io.h"
-#include "qtutil/resource.h"
 #include "triple_finder/manually_triple_finder.h"
 #include "triple_finder/triple_finder.h"
+#include "util/fileio.h"
+#include "util/qrc.h"
 
 #include "config.h"
 #include "logging.h"
@@ -68,18 +68,16 @@ auto args_from_cmdline(int argc, char* argv[]) {
         .scan<'x', uint64_t>()
         .implicit_value(true)
         .store_into(args.payload);
+    
+    auto& offset_type_group = program.add_mutually_exclusive_group();
 
-    program.add_argument("--virtual-address")
+    offset_type_group.add_argument("--virtual-address")
         .help("Offset is a virtual address. (Used by '-f manually')")
         .store_into(args.is_virtual_address);
 
-    program.add_argument("--file-offset")
+    offset_type_group.add_argument("--file-offset")
         .help("Offset is a file offset. (Used by '-f manually')")
         .store_into(args.is_file_offset);
-    
-    auto& offset_type_group = program.add_mutually_exclusive_group();
-    offset_type_group.add_argument("--virtual-address");
-    offset_type_group.add_argument("--file-offset");
 
     // clang-format on
 
@@ -109,8 +107,7 @@ auto args_from_cmdline(int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) try {
     using namespace triple_finder;
-    using namespace io;
-    using namespace qtutil;
+    using namespace util;
 
     auto args = args_from_cmdline(argc, argv);
 

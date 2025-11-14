@@ -6,10 +6,10 @@
 
 #include "error.h"
 
-namespace qresext::io {
+namespace qresext::util {
 
 using byte_container_t = std::vector<uint8_t>;
 
 tl::expected<byte_container_t, ErrorCode> read(std::string_view path);
 
-} // namespace qresext::io
+} // namespace qresext::util

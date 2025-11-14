@@ -8,7 +8,7 @@
 
 #include "triple_finder/abstract_triple_finder.h"
 
-namespace qresext::qtutil {
+namespace qresext::util {
 
 tl::expected<void, ErrorCode>
 register_resource_data(const triple_finder::ROTriple& triple);
@@ -18,4 +18,4 @@ unregister_resource_data(const triple_finder::ROTriple& triple);
 
 tl::expected<void, ErrorCode> dump_resources(std::string_view savepath);
 
-} // namespace qresext::qtutil
+} // namespace qresext::util

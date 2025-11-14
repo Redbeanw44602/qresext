@@ -4,11 +4,11 @@
  * This file is part of the qresext software.
  */
 
-#include "io/io.h"
+#include "util/fileio.h"
 
 #include "logging.h"
 
-namespace qresext::io {
+namespace qresext::util {
 
 tl::expected<byte_container_t, ErrorCode> read(std::string_view path) {
     std::ifstream ifs((std::string(path)), std::ios::binary | std::ios::ate);
@@ -31,4 +31,4 @@ tl::expected<byte_container_t, ErrorCode> read(std::string_view path) {
     return buffer;
 }
 
-} // namespace qresext::io
+} // namespace qresext::util

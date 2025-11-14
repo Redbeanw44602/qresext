@@ -13,8 +13,8 @@
 namespace qresext::triple_finder {
 
 find_triple_result _find_in_elf(
-    const io::byte_container_t& rawfile,
-    const LIEF::ELF::Binary&    elf
+    const util::byte_container_t& rawfile,
+    const LIEF::ELF::Binary&      elf
 ) {
     logi("Executable Linkable Format (ELF) binary found.");
 

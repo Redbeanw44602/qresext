@@ -7,7 +7,7 @@
 #pragma once
 
 #include "error.h"
-#include "io/io.h"
+#include "util/fileio.h"
 
 namespace qresext::triple_finder {
 
@@ -22,14 +22,14 @@ struct ROTriple {
 
 class TripleFinder {
 public:
-    explicit TripleFinder(const io::byte_container_t& filecontent)
+    explicit TripleFinder(const util::byte_container_t& filecontent)
     : m_data(filecontent) {}
     virtual ~TripleFinder() = default;
 
     virtual find_triple_result find() = 0;
 
 protected:
-    const io::byte_container_t& m_data;
+    const util::byte_container_t& m_data;
 };
 
 void logdebug(

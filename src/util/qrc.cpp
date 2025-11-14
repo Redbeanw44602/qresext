@@ -6,7 +6,7 @@
 
 #include <QDirIterator>
 
-#include "qtutil/resource.h"
+#include "util/qrc.h"
 
 #include "logging.h"
 
@@ -18,7 +18,7 @@ bool qUnregisterResourceData(int, const unsigned char*, const unsigned char*, co
 
 // ...
 
-namespace qresext::qtutil {
+namespace qresext::util {
 
 constexpr int RCC_VERSION = 0x3;
 
@@ -97,4 +97,4 @@ tl::expected<void, ErrorCode> dump_resources(std::string_view savepath) {
     return {};
 }
 
-} // namespace qresext::qtutil
+} // namespace qresext::util

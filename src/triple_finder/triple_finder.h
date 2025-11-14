@@ -17,6 +17,6 @@ enum KnownTripleFinder {
 };
 
 tl::expected<triple_finder_ref, ErrorCode>
-create(KnownTripleFinder type, const io::byte_container_t& filecontent);
+create(KnownTripleFinder type, const util::byte_container_t& filecontent);
 
 } // namespace qresext::triple_finder
