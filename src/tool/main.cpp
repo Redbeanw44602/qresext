@@ -48,26 +48,19 @@ auto args_from_cmdline(int argc, char* argv[]) {
         .help("Specify the triple(tree, names, payload) finder. [auto, manually, lief]")
         .choices("auto", "manually", "lief")
         .default_value("auto")
-        .implicit_value(true)
         .store_into(args.finder);
     
     program.add_argument("--tree")
         .help("Specify the offset of the tree. (Used by '-f manually')")
-        .scan<'x', uint64_t>()
-        .implicit_value(true)
-        .store_into(args.tree);
+        .scan<'x', uint64_t>();
 
     program.add_argument("--names")
         .help("Specify the offset of the names. (Used by '-f manually')")
-        .scan<'x', uint64_t>()
-        .implicit_value(true)
-        .store_into(args.names);
+        .scan<'x', uint64_t>();
 
     program.add_argument("--payload")
         .help("Specify the offset of the payload. (Used by '-f manually')")
-        .scan<'x', uint64_t>()
-        .implicit_value(true)
-        .store_into(args.payload);
+        .scan<'x', uint64_t>();
     
     auto& offset_type_group = program.add_mutually_exclusive_group();
 
@@ -100,6 +93,14 @@ auto args_from_cmdline(int argc, char* argv[]) {
                 "--virtual-address or --file-offset."
             );
         }
+
+        // there's an issue with argparse's `store_into`, so we store it
+        // manually now.
+        // see https://github.com/p-ranav/argparse/issues/415
+
+        args.tree    = program.get<uint64_t>("--tree");
+        args.names   = program.get<uint64_t>("--names");
+        args.payload = program.get<uint64_t>("--payload");
     }
 
     return args;
